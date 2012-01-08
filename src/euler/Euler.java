@@ -17,7 +17,7 @@ public class Euler {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Problem52().Solve();
+        new Problem53().Solve();
     }
 
     public static List<Integer> GetPrimes(int max) {
