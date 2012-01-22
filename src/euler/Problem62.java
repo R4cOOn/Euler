@@ -5,11 +5,9 @@
 package euler;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.sound.midi.SysexMessage;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -17,9 +15,8 @@ import javax.sound.midi.SysexMessage;
  */
 public class Problem62 {
 
-    private int _start = 1;
-    private int _max = 100000;
-    private int _permutations = 3;
+    private int _max = 10000;
+    private int _permutations = 5;
 
     private static String Cube(int n) {
         BigInteger bigN = BigInteger.valueOf(n);
@@ -56,27 +53,59 @@ public class Problem62 {
         return result;
     }
 
-    public void Solve() {
-        int start = 1;
-        for (int i = 0; i < _permutations - 1; i++) {
-            start *= 10;
-        }
-        start = Math.max(_start, start);
-
-        HashSet<String> hashSet = new HashSet<String>();
-        for (int n = start; n < _max; n++) {
-            hashSet.add(Cube(n));
-        }
-
-        for (int n = start; n < _max; n++) {
-            System.out.println("Processing=" + n);
-            String cube = Cube(n);
-
-            int permutations = Permutate(cube.toCharArray(), 0, new HashSet<String>(), hashSet);
-            if (permutations == _permutations) {
-                System.out.println("Result=" + n);
-                break;
+    private int GetDigitCount(char[] number, int digit) {
+        int count = 0;
+        for (int i = 0; i < number.length; i++) {
+            if (number[i] == (char) (digit + 48)) {
+                count++;
             }
         }
+        return count;
+    }
+
+    private static int DifferenceCount(String s1, String s2) {
+        int differences = 0;
+        if (s1.length() != s2.length()) {
+            return Integer.MAX_VALUE;
+        }
+
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                differences++;
+            }
+        }
+        return differences;
+    }
+
+    private static String SortString(String s) {
+        char[] originalArray = s.toCharArray();
+        Arrays.sort(originalArray);
+        return new String(originalArray);
+    }
+
+    public void Solve() {
+        HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
+        String result = "";
+        for (int n = 1; n < _max; n++) {
+            String cube = Cube(n);
+            String key = SortString(cube);
+
+            List<String> cubes = hashMap.get(key);
+            if (cubes == null) {
+                cubes = new ArrayList<String>();
+                hashMap.put(key, cubes);
+            }
+            cubes.add(cube);
+            if (_permutations <= cubes.size()) {
+                Collections.sort(cubes);
+                String candidate = cubes.get(0);
+                if (result.equals("") || candidate.compareTo(result) < 0) {
+                    result = candidate;
+                    System.out.println("n=" + n + ", n^3=" + result);
+                }
+            }
+        }
+
+        System.out.println("Result=" + result);
     }
 }
