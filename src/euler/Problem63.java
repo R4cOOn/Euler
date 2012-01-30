@@ -17,8 +17,8 @@ public class Problem63 {
 
     public void Solve() {
         int count = 0;
-        for (int digit = 2; digit < _maxDigit; digit++) {
-            for (int power = 2; power < _maxPower; power++) {
+        for (int digit = 1; digit < _maxDigit; digit++) {
+            for (int power = 1; power < _maxPower; power++) {
                 BigInteger number = BigInteger.valueOf(digit).pow(power);
 
                 if (number.toString().length() == power) {
