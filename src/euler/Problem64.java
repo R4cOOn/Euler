@@ -4,6 +4,8 @@
  */
 package euler;
 
+import java.util.List;
+
 /**
  *
  * @author arnaud
@@ -15,42 +17,10 @@ public class Problem64 {
     public void Solve() {
 
         int sum = 0;
-
         for (int n = 2; n <= _max; n++) {
-            double root = Math.sqrt(n);
-            if (Math.floor(root) == root) {
-                continue;
-            }
-            int initial = (int) Math.floor(root);
-            System.out.print("n=" + n + ", [ " + initial + " ,( ");
+            List<Integer> fractioner = Euler.GetSqrtContinuedFraction(n);
 
-            int denominator = initial;
-            int numerator = 1;
-
-            int previousDenominator = denominator;
-            int previousNumerator = numerator;
-
-            int partialSum = 0;
-            do {
-                int newDenominator = (n - previousDenominator * previousDenominator) / previousNumerator;
-                int newNumerator = initial;
-                while ((previousDenominator + newNumerator) % newDenominator != 0) {
-                    newNumerator--;
-                    assert 0 < newNumerator;
-                }
-                int newInitial = (previousDenominator + newNumerator) / newDenominator;
-
-                previousDenominator = newNumerator;
-                previousNumerator = newDenominator;
-
-                System.out.print(newInitial + ", ");
-                
-                partialSum++;
-            } while (previousDenominator != denominator || previousNumerator != numerator);
-
-            System.out.println(")]");
-            
-            if (partialSum % 2 !=0){
+            if (fractioner.size() % 2 == 0) {
                 sum++;
             }
         }
