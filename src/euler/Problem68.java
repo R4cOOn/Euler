@@ -6,6 +6,7 @@ package euler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -15,25 +16,30 @@ public class Problem68 {
 
     private int _gonCount = 5;
 
-    private static void Mix(int start, int[] nodes) {
+    private static List<String> Mix(int start, int[] nodes) {
+        ArrayList<String> result = new ArrayList<String>();
         if (nodes.length <= start) {
-            GonCalculate(nodes);
+            String temp = GonCalculate(nodes);
+            if (temp != null) {
+                result.add(temp);
+            }
         } else {
             for (int i = start; i < nodes.length; i++) {
                 int temp = nodes[i];
                 nodes[i] = nodes[start];
                 nodes[start] = temp;
 
-                Mix(start + 1, nodes);
+                result.addAll(Mix(start + 1, nodes));
 
                 temp = nodes[i];
                 nodes[i] = nodes[start];
                 nodes[start] = temp;
             }
         }
+        return result;
     }
 
-    private static void GonCalculate(int[] nodes) {
+    private static String GonCalculate(int[] nodes) {
         int gonCount = nodes.length / 2;
         int[] result = new int[gonCount * gonCount];
         ArrayList<Integer> nodeList = new ArrayList<Integer>();
@@ -58,16 +64,18 @@ public class Problem68 {
         }
 
         if (isOK) {
-            System.out.print("Sum=" + sum + ", ");
+            StringBuilder stringBuilder = new StringBuilder();
             for (int gon = 0; gon < gonCount; gon++) {
-                System.out.print(result[gon * 3]);
-                System.out.print(", ");
-                System.out.print(result[gon * 3 + 1]);
-                System.out.print(", ");
-                System.out.print(result[gon * 3 + 2]);
-                System.out.print("; ");
+                stringBuilder.append(result[gon * 3]);
+                stringBuilder.append(", ");
+                stringBuilder.append(result[gon * 3 + 1]);
+                stringBuilder.append(", ");
+                stringBuilder.append(result[gon * 3 + 2]);
+                stringBuilder.append("; ");
             }
-            System.out.println();
+            return stringBuilder.toString();
+        } else {
+            return null;
         }
     }
 
@@ -78,6 +86,11 @@ public class Problem68 {
             nodes[i] = i + 1;
         }
 
-        Mix(0, nodes);
+        List<String> result = Mix(0, nodes);
+        Collections.sort(result);
+        for (String string : result) {
+            System.out.print("Length=" + string.length() + ", ");            
+            System.out.println(string);
+        }
     }
 }
