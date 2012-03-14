@@ -99,7 +99,7 @@ public class Problem93 {
                 System.out.println(result + " - " + max);
             }
         }
-
+        
         System.out.println("Result=" + result);
     }
 }

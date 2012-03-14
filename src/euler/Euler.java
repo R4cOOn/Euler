@@ -21,7 +21,7 @@ public class Euler {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Problem93().Solve();
+        new Problem95().Solve();
     }
 
     public static int Gcd(int a, int b) {
