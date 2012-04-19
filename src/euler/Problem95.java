@@ -4,10 +4,7 @@
  */
 package euler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -29,77 +26,77 @@ public class Problem95 {
 
     private static List<Integer> GetChain(
             int number,
-            ArrayList<Integer> previousTerms,
-            HashMap<Integer, List<Integer>> divisorsMemo,
-            HashMap<Integer, List<Integer>> resultsMemo) {
+            int root,
+            HashSet<Integer> previousTerms,
+            HashMap<Integer, Integer> nextNumberMemo) {
         if (_maxTerm < number) {
             return null;
         }
 
-
         boolean isAlreadyThere = previousTerms.contains(number);
         previousTerms.add(number);
 
-        if (isAlreadyThere || number == 1) {
-            List<Integer> result = new ArrayList<Integer>();
-            result.add(number);
-            return result;
+        if (isAlreadyThere || number <= 1) {
+            if (number == root) {
+                ArrayList<Integer> result = new ArrayList<Integer>();
+                result.add(number);
+                return result;
+            } else {
+                return null;
+            }
         }
 
 
-        List<Integer> divisors = divisorsMemo.get(number);
-        if (divisors == null) {
-            divisors = GetDivisors(number);
-            divisorsMemo.put(number, divisors);
+        Integer nextNumber = nextNumberMemo.get(number);
+        if (nextNumber == null && !nextNumberMemo.containsKey(number)) {
+            nextNumber = GetNextNumber(number);
+            nextNumberMemo.put(number, nextNumber);
         }
 
-        int divisorsSum = 0;
-        for (Integer integer : divisors) {
-            divisorsSum += integer;
-        }
-        if (_maxTerm < divisorsSum) {
+        if (nextNumber == null || _maxTerm <= nextNumber) {
             return null;
         }
 
-        List<Integer> chain = resultsMemo.get(number);
-        if (chain == null && !resultsMemo.containsKey(number)) {
-            chain = GetChain(divisorsSum, previousTerms, divisorsMemo, resultsMemo);
-            resultsMemo.put(number, chain);
-        }
+        List<Integer> chain = GetChain(nextNumber, root, previousTerms, nextNumberMemo);
 
         if (chain == null) {
             return null;
         } else {
-            chain.add(0, number);
+            chain.add(number);
             return chain;
         }
     }
 
+    private static int GetNextNumber(int number) {
+        List<Integer> divisors = GetDivisors(number);
+        int divisorsSum = 0;
+        for (Integer integer : divisors) {
+            divisorsSum += integer;
+            assert 0 < divisorsSum;
+        }
+
+        return divisorsSum;
+    }
+
     public void Solve() {
-        HashMap<Integer, List<Integer>> divisorsMemo = new HashMap<Integer, List<Integer>>();
-        HashMap<Integer, List<Integer>> resultsMemo = new HashMap<Integer, List<Integer>>();
+        HashMap<Integer, Integer> nextNumberMemo = new HashMap<Integer, Integer>();
 
-        int maxLengthChain = 0;
-        int maxLengthNumber = 0;
-
-        for (int n = 1; n < 30; n++) {
-//            if (n % 1000 == 0) {
-//                System.out.println(n);
-//            }
-
-            List<Integer> chain = GetChain(n, new ArrayList<Integer>(), divisorsMemo, resultsMemo);
-            if (chain == null) {
-//                System.out.println(n + " - Too big");
-            } else if (maxLengthChain < chain.size()) {
-                maxLengthChain = chain.size();
-                maxLengthNumber = n;
-                System.out.println(maxLengthNumber + " - " + maxLengthChain);
-
+        int longestChaingSize = 0;
+        int smallestMember = 0;
+        for (int n = 1; n < _maxTerm; n++) {
+            List<Integer> chain = GetChain(n, n, new HashSet<Integer>(), nextNumberMemo);
+            if (chain != null && longestChaingSize < chain.size() && chain.get(0) == n) {
+                longestChaingSize = chain.size();
+                smallestMember = Integer.MAX_VALUE;
                 for (Integer integer : chain) {
-                    System.out.print(integer + " -> ");
+                    if (integer < smallestMember) {
+                        smallestMember = integer;
+                    }
                 }
-                System.out.println();
+                System.out.println(n + " - " + longestChaingSize + " - " + smallestMember);
             }
         }
+
+        System.out.println("Results=" + smallestMember);
     }
 }
