@@ -4,7 +4,6 @@
  */
 package euler;
 
-import com.sun.corba.se.spi.ior.MakeImmutable;
 import java.util.*;
 
 /**
@@ -33,7 +32,7 @@ public class Problem93 {
         return stringBuilder.toString();
     }
 
-    private static HashMap<String, HashSet<Integer>> Compute(List<Integer> usedNumbers) {
+    private static HashMap<String, HashSet<Integer>> Compute(List<Integer> usedNumbers, int maxDigits) {
         if (_maxDigits <= usedNumbers.size()) {
             throw new RuntimeException("Should have stopped before");
         }
@@ -48,12 +47,14 @@ public class Problem93 {
 
             usedNumbers.add(i);
 
-            if (usedNumbersOriginalSize == _maxDigits - 1) {
+            if (maxDigits <= 1) {
                 HashSet<Integer> hashSet = new HashSet<Integer>();
                 hashSet.add(i);
                 results.put(Integer.toString(i), hashSet);
             } else {
-                HashMap<String, HashSet<Integer>> result = Compute(usedNumbers);
+                // here, need to compute for each possible chunk of data to be able to get the value for (1 * 2) + (3 * 4)
+                
+                HashMap<String, HashSet<Integer>> result = Compute(usedNumbers, maxDigits - 1);
 
                 for (Map.Entry<String, HashSet<Integer>> entry : result.entrySet()) {
                     String newKey = MakeNewKey(i, entry.getKey());
@@ -67,7 +68,9 @@ public class Problem93 {
                     for (Integer integer : entry.getValue()) {
                         hashSet.add(i + integer);
                         hashSet.add(i - integer);
+                        hashSet.add(integer - i);
                         hashSet.add(i * integer);
+                        hashSet.add(integer / i);
 
                         if (integer != 0) {
                             hashSet.add(i / integer);
@@ -83,7 +86,7 @@ public class Problem93 {
     }
 
     public void Solve() {
-        HashMap<String, HashSet<Integer>> results = Compute(new ArrayList<Integer>());
+        HashMap<String, HashSet<Integer>> results = Compute(new ArrayList<Integer>(), _maxDigits);
 
         String result = "";
         int max = 0;
@@ -93,13 +96,18 @@ public class Problem93 {
                 number++;
             }
 
+            System.out.println(entry.getKey() + " - " + (number - 1));
+
             if (max < number) {
                 max = number;
                 result = entry.getKey();
-                System.out.println(result + " - " + max);
+                System.out.println(result + " - " + (max - 1) + " <--");
+            } else if (max == number) {
+                System.out.println("Duplicate result: " + entry.getKey());
+                result = result.compareTo(entry.getKey()) < 0 ? result : entry.getKey();
             }
         }
-        
+
         System.out.println("Result=" + result);
     }
 }
